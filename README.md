@@ -53,7 +53,7 @@ new XRouter({
  ```ts
  // if hooks are enabled
 import { useRequest, useResponse } from 'xrouter';
- export default function () {
+ export default async function () {
      const [req, res] = [useRequest(), useResponse()]
       res
       .status(200)
@@ -62,7 +62,7 @@ import { useRequest, useResponse } from 'xrouter';
 ```
  ```ts
  // if hooks are disabled
- export default function (req, res) {
+ export default async function (req, res) {
       res
       .status(200)
       .json({ _id: crypto.randomUUID() })
