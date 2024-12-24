@@ -17,7 +17,6 @@ A simple, powerful Express handler with hook support for req and res.
 </div>
 
 
-Check out the [contributors guide](https://github.com/underctrl-io/commandkit/blob/main/CONTRIBUTING.md)
 
 > [!NOTE]  
 > The Routes must created inside Routes folder and the filename should always be server.js.
