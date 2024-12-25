@@ -265,13 +265,13 @@ export class XRouter {
     if (this.useHooks) {
       this.app
         .route(route)
-        ["get"](async (req, res, next) =>
+        [method](async (req, res, next) =>
           ServerContext.run({ request: req, response: res, next }, file[method.toUpperCase()])
         );
     } else {
       this.app
         .route(route)
-        ["get"](async (req, res, next) => file[method.toUpperCase()](req, res, next));
+        [method](async (req, res, next) => file[method.toUpperCase()](req, res, next));
     }
   }
   #buildRoutes() {
