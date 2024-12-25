@@ -6,17 +6,21 @@ import { ServerContext } from "../utils/constants";
 import colors from "../utils/colors";
 export class XRouter {
   public useHooks: boolean;
-  public dir: string;
+  public dir?: string;
+  public catchAllRoutes?: string;
   private app: Application;
-  constructor({ dir, app, hooks }: RouterOptions) {
+  constructor({ dir, app, hooks, catchAllRoutes }: RouterOptions) {
     this.useHooks = hooks ?? false;
     this.dir = dir;
+    this.catchAllRoutes = catchAllRoutes;
     this.app = app;
     this.#buildRoutes();
   }
 
   #initHooks() {
     try {
+      if (!this.dir)
+        throw new Error("[Error: XRouter] The dir path is missing in class");
       for (const method of getMethods(this.dir)) {
         switch (method.method) {
           case "GET":
@@ -101,6 +105,9 @@ export class XRouter {
   }
 
   #initRoutes() {
+    if (!this.dir)
+      throw new Error("[Error: XRouter] The dir path is missing in class");
+
     let count: number = 0;
     try {
       for (const method of getMethods(this.dir)) {
@@ -171,6 +178,8 @@ export class XRouter {
     }
   }
   #registerRoute(method: HttpMethod, methodPath: string, hooks?: boolean) {
+    if (!this.dir)
+      throw new Error("[Error: XRouter] The dir path is missing in class");
     try {
       for (const info of getFiles(methodPath, true)) {
         const file = require(info.filePath);
@@ -218,8 +227,56 @@ export class XRouter {
     }
   }
 
+  #initAllRoutes(path: string) {
+    if (!this.catchAllRoutes)
+      throw new Error("[Error: XRouter] The dir path is missing in class");
+    try {
+      for (const files of getFiles(path, true)) {
+        const run = require(files.filePath);
+        const route = pathToRoute(
+          files.filePath.substring(path.indexOf("Routeset") + "Routeset".length)
+        );
+
+        if (run.GET) {
+          this.#registerCatchAll("get", route, run);
+        }
+        if (run.POST) {
+          this.#registerCatchAll("post", route, run);
+        }
+        if (run.PUT) {
+          this.#registerCatchAll("put", route, run);
+        }
+        if (run.PATCH) {
+          this.#registerCatchAll("patch", route, run);
+        }
+        if (run.DELETE) {
+          this.#registerCatchAll("delete", route, run);
+        }
+      }
+    } catch (error) {
+      return console.debug(
+        colors.red("[Error: XError] Error while registering catch Routes"),
+        error
+      );
+    }
+  }
+
+  #registerCatchAll(method: HttpMethod, route: string, file: any) {
+    if (this.useHooks) {
+      this.app
+        .route(route)
+        ["get"](async (req, res, next) =>
+          ServerContext.run({ request: req, response: res, next }, file[method.toUpperCase()])
+        );
+    } else {
+      this.app
+        .route(route)
+        ["get"](async (req, res, next) => file[method.toUpperCase()](req, res, next));
+    }
+  }
   #buildRoutes() {
-    if (this.useHooks) this.#initHooks();
-    else this.#initRoutes();
+    if (this.catchAllRoutes) this.#initAllRoutes(this.catchAllRoutes);
+    if (this.useHooks && this.dir) this.#initHooks();
+    else if (this.dir) this.#initRoutes();
   }
 }

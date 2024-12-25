@@ -4,7 +4,7 @@ export interface RouterOptions {
     /**
      * The path where all the routes are being created.
      */
-    dir: string    
+    dir?: string    
     /**
      * Get access to Request & Response from XRouter Hooks.
      * @example
@@ -22,6 +22,11 @@ export interface RouterOptions {
      * For more information, see {@link https://expressjs.com/en/api.html#app Express Application}.
      */
     app:Application
+
+    /**
+     * The path for a single Route which accepts all HTTP Methods
+     */
+    catchAllRoutes?: string
 }
 
 

@@ -6,7 +6,6 @@
       "moduleResolution": "Node",
       "strict": true,
       "noImplicitAny": true,
-      "declaration": false,
       "skipLibCheck": true,
       "strictNullChecks": true,
       "resolveJsonModule": true,

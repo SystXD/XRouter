@@ -4,9 +4,8 @@ import path from 'path'
 const app = express()
 
 new XRouter({
-    dir: path.join(__dirname, 'Routes'), // The folder name must be "Routes",
     app,
+    catchAllRoutes: path.join(__dirname, 'Routeset'),
     hooks: true
 })
-
-app.listen(3200, () => console.log("The API is Launched"))
+app.listen(3200, () => console.log("LAUNCHED DEMO"))

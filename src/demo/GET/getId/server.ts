@@ -1,6 +1,6 @@
-import { useRequest, useResponse } from "../../../../utils/constants";
+import { useRequest, useResponse } from "../../../utils/constants";
 
-export default async function(){
+export async function GET(){
     const [req, res] = [useRequest(), useResponse()]
     res
     .status(200)
